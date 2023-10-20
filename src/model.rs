@@ -42,8 +42,10 @@ impl Item {
     }
 
     fn write(&self) {
+        let is_truncate = self.todo.is_empty();
         let mut todofile = OpenOptions::new()
             .write(true)
+            .truncate(is_truncate)
             .open(&self.filepath)
             .expect("Failed to open file");
         todofile
@@ -61,7 +63,11 @@ impl Item {
         let mut lines: Vec<&str> = self.todo.split('\n').collect();
         //再将指定行的[ ]替换为[x]
         let mut line = lines[no - 1].to_string();
-        line.replace_range(3..4, "x");
+        if line.contains("[ ]") {
+            line = line.replace("[ ]", "[x]");
+        } else if line.contains("[x]") {
+            line = line.replace("[x]", "[ ]");
+        }
         lines[no - 1] = &line;
         //再将lines重新组合为todo
         let mut todo = String::new();
@@ -75,7 +81,7 @@ impl Item {
 
     pub fn clear_items(&mut self) {
         //清空todo
-        self.todo = "".to_string();
+        self.todo = String::new();
         self.write();
     }
 }
