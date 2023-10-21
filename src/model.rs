@@ -32,7 +32,10 @@ impl Item {
     pub fn add_item(&mut self, item: String) {
         //添加类似1.[ ] item的格式
         let index = self.get_index();
-        let mut item = format!("{}.[ ] {}\n", index, item);
+        let time = chrono::prelude::Local::now()
+            .format("%Y-%m-%d %H:%M:%S")
+            .to_string();
+        let mut item = format!("{}.[ ] {} {}\n", index, item, time);
         self.todo.push_str(&mut item);
         self.write();
     }
